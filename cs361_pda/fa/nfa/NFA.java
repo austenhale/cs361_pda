@@ -156,5 +156,10 @@ public class NFA implements fa.FAInterface{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public Set<NFAState> eClosure(NFAState s){
+		// TODO this method
+		return null;
+	}
 
 }
