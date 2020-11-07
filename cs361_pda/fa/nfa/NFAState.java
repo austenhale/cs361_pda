@@ -1,10 +1,11 @@
 package fa.nfa;
 
 import java.util.HashMap;
+import java.util.Set;
 
 public class NFAState extends fa.State{
 	
-	private HashMap<Character, NFAState> delta;
+	private HashMap<Character, Set<NFAState>> delta;
 	private boolean isFinal;
 	
 
@@ -21,7 +22,7 @@ public class NFAState extends fa.State{
 	
 	private void initDefault(String name) {
 		this.name = name;
-		delta = new HashMap<Character, NFAState>();
+		delta = new HashMap<Character, Set<NFAState>>();
 		
 	}
 	
