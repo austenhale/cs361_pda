@@ -31,14 +31,14 @@ public class NFAState extends fa.State{
 	}
 
 
-	public void addTransition(char onSymb, NFAState toState) {
+	public void addTransition(char onSymb, Set<NFAState> toState) {
 		delta.put(onSymb, toState);
 		
 	}
 
 
 	public Object getTo(char symb) {
-		NFAState ret = delta.get(symb);
+		Set<NFAState> ret = delta.get(symb);
 		if (ret==null) {
 			System.err.println("ERROR: NFAState.getTo(char symb) returns null on " + symb + " from " + name);
 			 System.exit(2);
