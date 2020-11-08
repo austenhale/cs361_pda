@@ -12,10 +12,12 @@ public class NFA implements fa.FAInterface{
 	private Set<NFAState> states;
 	private NFAState start;
 	private Set<Character> language;
+	private Set<NFAState> visitedStates; 
 	
 	public NFA() {
 		states = new LinkedHashSet<NFAState>();
 		language = new LinkedHashSet<Character>();
+		visitedStates =  new LinkedHashSet<NFAState>();
 	}
 
 	@Override
@@ -158,8 +160,16 @@ public class NFA implements fa.FAInterface{
 	}
 	
 	public Set<NFAState> eClosure(NFAState s){
-		// TODO this method
-		return null;
+		visitedStates.add(s); //add the state to the visited list
+		if (s.hasTransition('e')) { //if there's an empty transition
+			Set<NFAState> nextState = s.getTransition('e'); //get a set of all possible transitions
+			for (NFAState next : nextState) { //for every state that is reachable
+				eClosure(next); //repeat the process
+			}
+			
+		}
+		
+		return visitedStates; //return the full list after recursion ends
 	}
 
 }
