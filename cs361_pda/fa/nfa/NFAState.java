@@ -152,4 +152,5 @@ public class NFAState extends fa.State implements Set<NFAState>{
 		return delta.get(c);
 	}
 
+	
 }

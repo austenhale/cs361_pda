@@ -1,6 +1,8 @@
 package fa.nfa;
 
+import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 import fa.State;
@@ -155,7 +157,41 @@ public class NFA implements fa.FAInterface{
 		return s;
 	}
 	public DFA getDFA() {
-		// TODO Auto-generated method stub
+		//each DFA state corresponds to set of NFA states
+		//getDfa method should track whether a DFA state with label(name) 
+			//corresponding to the string representation of the NFA states
+		//getDFA must use a breadth-first search
+			//loop iterating over a queue; an element of a queue is a set of NFA states
+			//example BFS:
+			//boolean visited[] = new boolean[V];
+			//LinkedList<integer> queue = new LinkedList<Integer>();
+			//visted[s] = true; //s is an int
+			//queue.add(s);
+			//while(queue.size() != 0){
+			//	s = queue.poll();
+			//	Iterator<Integer> i = adj[s].listIterator();
+			//	while (i.hasNext()){
+					//int n = i.next();
+					//if (!visited[n]){
+					//visited[n] = true;
+					//queue.add(n);}}
+		boolean visited[] = new boolean[states.size()];
+		LinkedList<NFAState> queue = new LinkedList<NFAState>();
+		int i = 0;
+		visited[i] = true;
+		queue.add(get(i, states));
+		while (queue.size() != 0) {
+			NFAState state = queue.poll();
+			Set<NFAState> setState = eClosure(state);
+			for (NFAState stateInSet : setState) {
+				i++;
+				if (!visited[i]) {
+					visited[i] = true;
+				}
+				queue.add(stateInSet);
+			}
+		}
+		
 		return null;
 	}
 	
@@ -172,4 +208,37 @@ public class NFA implements fa.FAInterface{
 		return visitedStates; //return the full list after recursion ends
 	}
 
+	
+	/**
+	 * This will get an element from the set.
+	 * @param stateToGet
+	 * @param set
+	 * @return a copy of the State from the set, null if state is not in set
+	 */
+	private NFAState get(NFAState stateToGet, Set<NFAState> set) {
+		for (NFAState state : set) {
+			if (state.toString().equals((stateToGet.toString()))) {
+				return state;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * This will get an element from the set, given an index.
+	 * @param i - index
+	 * @param set
+	 * @return a copy of the State from the set at the index, null if state is not in set
+	 */
+	private NFAState get(int i, Set<NFAState> set) {
+		int n = 0;
+		for (NFAState state : set) {
+			n++;
+			if (n == i) {
+					return state;
+			}
+		
+		}
+		return null;
+	}
 }
