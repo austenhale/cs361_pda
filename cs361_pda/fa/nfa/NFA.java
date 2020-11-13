@@ -9,7 +9,7 @@ import fa.State;
 import fa.dfa.DFA;
 import fa.dfa.DFAState;
 
-public class NFA implements fa.FAInterface{
+public class NFA implements NFAInterface{
 	
 	private Set<NFAState> states;
 	private NFAState start;
@@ -240,5 +240,10 @@ public class NFA implements fa.FAInterface{
 		
 		}
 		return null;
+	}
+
+	@Override
+	public Set<NFAState> getToState(NFAState from, char onSymb) {
+		return from.getTransition(onSymb);
 	}
 }
