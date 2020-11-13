@@ -157,6 +157,7 @@ public class NFA implements NFAInterface{
 		return s;
 	}
 	public DFA getDFA() {
+		DFA dfa = new DFA();
 		//each DFA state corresponds to set of NFA states
 		//getDfa method should track whether a DFA state with label(name) 
 			//corresponding to the string representation of the NFA states
@@ -177,7 +178,7 @@ public class NFA implements NFAInterface{
 					//queue.add(n);}}
 		
 		//pseudocode for NFA to DFA
-		//Perform closrue on current state set
+		//Perform closure on current state set
 		//For each input symbol do the GOTO operation on closure set
 			//If the state set you get from GOTO is not empty
 				//Do a closure of the state set
@@ -186,6 +187,7 @@ public class NFA implements NFAInterface{
 					//repeat the entire operation on this new set
 				//else
 					//add a transition between the state sets on the input
+		
 		boolean visited[] = new boolean[states.size()];
 		LinkedList<NFAState> queue = new LinkedList<NFAState>();
 		int i = 0;
@@ -203,7 +205,7 @@ public class NFA implements NFAInterface{
 			}
 		}
 		
-		return null;
+		return dfa;
 	}
 	
 	public Set<NFAState> eClosure(NFAState s){
