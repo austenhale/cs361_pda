@@ -175,6 +175,17 @@ public class NFA implements NFAInterface{
 					//if (!visited[n]){
 					//visited[n] = true;
 					//queue.add(n);}}
+		
+		//pseudocode for NFA to DFA
+		//Perform closrue on current state set
+		//For each input symbol do the GOTO operation on closure set
+			//If the state set you get from GOTO is not empty
+				//Do a closure of the state set
+				//If it is a new set of states:
+					//add a transition between the state sets on the input
+					//repeat the entire operation on this new set
+				//else
+					//add a transition between the state sets on the input
 		boolean visited[] = new boolean[states.size()];
 		LinkedList<NFAState> queue = new LinkedList<NFAState>();
 		int i = 0;
