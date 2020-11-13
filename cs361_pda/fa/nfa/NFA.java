@@ -74,7 +74,7 @@ public class NFA implements NFAInterface{
 		}
 		from.addTransition(onSymb, to);
 		
-		if (!language.contains(onSymb)) {
+		if (!language.contains(onSymb) && onSymb != 'e') {
 			language.add(onSymb);
 		}
 		
