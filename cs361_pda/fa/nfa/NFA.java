@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
+import java.util.Stack;
 
 import fa.State;
 import fa.dfa.DFA;
@@ -311,19 +312,36 @@ public class NFA implements NFAInterface{
 	}
 
 	public Set<NFAState> eClosure(NFAState s){
-		visitedStates.add(s); //add the state to the visited list
-		if (s.hasTransition('e')) { //if there's an empty transition
-			Set<NFAState> nextState = s.getTransition('e'); //get a set of all possible transitions
-			for (NFAState next : nextState) { //for every state that is reachable
-				eClosure(next); //repeat the process
-			}
-			
-		}
+		Set<NFAState> e = new LinkedHashSet<NFAState>();
+		e.add(s);
+		Stack<NFAState> stack = new Stack<NFAState>();
+		stack.add(s);
 		
-		return visitedStates; //return the full list after recursion ends
+		Set<NFAState> statesVisited = new LinkedHashSet<NFAState>();
+		
+		return eClosure(stack, e, statesVisited);
 	}
 
 	
+	private Set<NFAState> eClosure(Stack<NFAState> stack, Set<NFAState> e, Set<NFAState> statesVisited) {
+		if (stack.isEmpty()) {
+			return e;
+		}
+		NFAState next = stack.pop();
+		if (statesVisited.contains(next)) {
+			return e;
+		}
+		LinkedHashSet<NFAState> nextETransitions = next.getTo('e');
+		if (nextETransitions != null) {
+			for (NFAState n : nextETransitions) {
+				e.add(n);
+				stack.add(n);
+			}
+		}
+		statesVisited.add(next);
+		return eClosure(stack, e, statesVisited);
+	}
+
 	/**
 	 * This will get an element from the set.
 	 * @param stateToGet

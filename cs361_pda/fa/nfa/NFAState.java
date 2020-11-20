@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class NFAState extends fa.State{
 	
-	private HashMap<Character, Set<NFAState>> delta;
+	private HashMap<Character, LinkedHashSet<NFAState>> delta;
 	private boolean isFinal;
 	
 
@@ -25,7 +25,7 @@ public class NFAState extends fa.State{
 	
 	private void initDefault(String name) {
 		this.name = name;
-		delta = new HashMap<Character, Set<NFAState>>();
+		delta = new HashMap<Character, LinkedHashSet<NFAState>>();
 		
 	}
 	
@@ -34,24 +34,19 @@ public class NFAState extends fa.State{
 	}
 
 
-	public void addTransition(char onSymb, Set<NFAState> to) {
+	public void addTransition(char onSymb, LinkedHashSet<NFAState> to) {
 		delta.put(onSymb, to);
 		
 	}
 	
 	public void addTransition(char onSymb, NFAState to) {
-		Set<NFAState> setOfOne = new LinkedHashSet<NFAState>();
+		LinkedHashSet<NFAState> setOfOne = new LinkedHashSet<NFAState>();
 		setOfOne.add(to);
 		delta.put(onSymb, setOfOne);
 	}
 
 
-	public Object getTo(char symb) {
-		Set<NFAState> ret = delta.get(symb);
-		if (ret==null) {
-			System.err.println("ERROR: NFAState.getTo(char symb) returns null on " + symb + " from " + name);
-			 System.exit(2);
-		}
+	public LinkedHashSet<NFAState> getTo(char symb) {
 		return delta.get(symb);
 	}
 
