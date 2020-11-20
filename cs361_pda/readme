@@ -1,0 +1,47 @@
+# Project 2: NFA to DFA Machine
+
+* Author: Austen Hale, Sammie Fullmer
+* Class: CS361 section 1
+* Semester: Fall 2020
+
+## Overview
+
+This program will take an input file containing information about an NFA, build the correpsonding
+NFA, and then convert it to a DFA. Afterwards it will check the DFA for correctness.
+
+## Compiling and Using
+
+To compile this program, from the top most directory type:
+	javac fa/nfa/NFADriver.java
+To run this program, type one of the following:
+	java fa.nfa.NFADriver ./tests/p2tc0.txt
+	java fa.nfa.NFADriver ./tests/p2tc1.txt
+	java fa.nfa.NFADriver ./tests/p2tc2.txt
+	java fa.nfa.NFADriver ./tests/p2tc3.txt
+
+## Discussion
+
+Overall we found this project a bit more difficult than the previous project. While building the NFA correctly was not an issue, with the main
+changes being that the HashMap for the NFA took a set of states as opposed to the DFA's only singular state, creating the methods to get the DFA
+from the NFA proved challenging. The eClosure method wasn't too bad; we used a Geekforgeeks example as recommended by Ashley to start off the method,
+and then modified it there to make the method work properly through depth-first search algorithm. After finishing the eClsoure method, we went onto
+the getDFA() method (as suggested). We knew that it had to use a BFS, and that it needed to make and return a DFA object. As such, we started with 
+making a new DFA object, and returning that object, and then between those making a queue. From here is where it started to get challenging for us. We knew
+that we had to use BFS to go through all the states in the NFA in order to determine and make our DFA states, but implementing that was easier said than done. To help
+with this part, we looked at the algorithm described all the way back before we learned PDAs, that describes how to convert an NFA to a DFA. Using this algorithm, we were able to
+successfully implement the getDFA() method!
+
+## Testing
+
+For testing this project, we used the provided test files to ensure that all our results matched the expected output. We also
+created pictures to help us visualize the machines.
+
+## Extra Credit
+
+No extra credit in this project.
+
+## Sources used
+
+ Class material and https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/ for a refresher on DFS
+
+----------
