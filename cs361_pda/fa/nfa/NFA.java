@@ -66,14 +66,14 @@ public class NFA implements NFAInterface{
 
 	@Override
 	public void addTransition(String fromState, char onSymb, String toState) {
-		NFAState from = checkIfExists(fromState);
-		NFAState to = checkIfExists(toState);
+		NFAState from = get(fromState);
+		NFAState to = get(toState);
 		if (from == null) {
 			System.err.println("ERROR: No NFA state exists with name " + fromState);
 			System.exit(2);
 		}else if (to == null) {
-			System.err.println("ERROR: NO NFA state exists with name " + toState);
-			System.exit(2);
+			addState(toState);
+			to = get(toState);
 		}
 		from.addTransition(onSymb, to);
 		
