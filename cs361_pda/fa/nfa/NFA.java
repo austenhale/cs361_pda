@@ -1,5 +1,6 @@
 package fa.nfa;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -193,7 +194,7 @@ public class NFA implements NFAInterface{
 		
 		Set<NFAState> startState = eClosure(this.start);
 		
-		String startStateName = getStatesName(startState); //I don't think we have a function to do this?
+		String startStateName = getStatesName(startState); 
 		
 		dfa.addStartState(startStateName);
 		
@@ -203,11 +204,29 @@ public class NFA implements NFAInterface{
 		queue.add(new DFAState(startStateName));
 	
 		// Add transitions 
-		addDFAStates(dfa, queue, statesFound); //Do we want to do another method or just do it all in here?
+		addDFAStates(dfa, queue, statesFound); //Do we want to do another method or just do it all in here? --I think we can start it here, then move it later if we want
 		
 		return dfa;
 	}
 	
+	private String getStatesName(Set<NFAState> state) {
+		String retVal = "{";
+		ArrayList<String> stateNames = new ArrayList<String>(); //list for storing all the names of the states
+		for (NFAState s: state) { //iterate through passed in states in the set
+			if (!stateNames.contains(s.getName())) {
+				stateNames.add(s.getName());
+			}
+		}
+		//I don't think we need to sort through the list, [a,b] or [b,a] is fine
+		for (String str : stateNames) {
+			retVal += str + ",";
+		}
+		
+		retVal = retVal.substring(0, retVal.length()-1);
+		retVal += "}";
+		return retVal;
+	}
+
 	public Set<NFAState> eClosure(NFAState s){
 		visitedStates.add(s); //add the state to the visited list
 		if (s.hasTransition('e')) { //if there's an empty transition
