@@ -3,6 +3,7 @@ package fa.nfa;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 
 import fa.State;
@@ -156,54 +157,53 @@ public class NFA implements NFAInterface{
 		s += fStates;
 		return s;
 	}
+	
+	//each DFA state corresponds to set of NFA states
+			//getDfa method should track whether a DFA state with label(name) 
+				//corresponding to the string representation of the NFA states
+			//getDFA must use a breadth-first search
+				//loop iterating over a queue; an element of a queue is a set of NFA states
+				//example BFS:
+				//boolean visited[] = new boolean[V];
+				//LinkedList<integer> queue = new LinkedList<Integer>();
+				//visted[s] = true; //s is an int
+				//queue.add(s);
+				//while(queue.size() != 0){
+				//	s = queue.poll();
+				//	Iterator<Integer> i = adj[s].listIterator();
+				//	while (i.hasNext()){
+						//int n = i.next();
+						//if (!visited[n]){
+						//visited[n] = true;
+						//queue.add(n);}}
+			
+			//pseudocode for NFA to DFA
+			//Perform closure on current state set
+			//For each input symbol do the GOTO operation on closure set
+				//If the state set you get from GOTO is not empty
+					//Do a closure of the state set
+					//If it is a new set of states:
+						//add a transition between the state sets on the input
+						//repeat the entire operation on this new set
+					//else
+						//add a transition between the state sets on the input
+
 	public DFA getDFA() {
 		DFA dfa = new DFA();
-		//each DFA state corresponds to set of NFA states
-		//getDfa method should track whether a DFA state with label(name) 
-			//corresponding to the string representation of the NFA states
-		//getDFA must use a breadth-first search
-			//loop iterating over a queue; an element of a queue is a set of NFA states
-			//example BFS:
-			//boolean visited[] = new boolean[V];
-			//LinkedList<integer> queue = new LinkedList<Integer>();
-			//visted[s] = true; //s is an int
-			//queue.add(s);
-			//while(queue.size() != 0){
-			//	s = queue.poll();
-			//	Iterator<Integer> i = adj[s].listIterator();
-			//	while (i.hasNext()){
-					//int n = i.next();
-					//if (!visited[n]){
-					//visited[n] = true;
-					//queue.add(n);}}
 		
-		//pseudocode for NFA to DFA
-		//Perform closure on current state set
-		//For each input symbol do the GOTO operation on closure set
-			//If the state set you get from GOTO is not empty
-				//Do a closure of the state set
-				//If it is a new set of states:
-					//add a transition between the state sets on the input
-					//repeat the entire operation on this new set
-				//else
-					//add a transition between the state sets on the input
+		Set<NFAState> startState = eClosure(this.start);
 		
-		boolean visited[] = new boolean[states.size()];
-		LinkedList<NFAState> queue = new LinkedList<NFAState>();
-		int i = 0;
-		visited[i] = true;
-		queue.add(get(i, states));
-		while (queue.size() != 0) {
-			NFAState state = queue.poll();
-			Set<NFAState> setState = eClosure(state);
-			for (NFAState stateInSet : setState) {
-				i++;
-				if (!visited[i]) {
-					visited[i] = true;
-				}
-				queue.add(stateInSet);
-			}
-		}
+		String startStateName = getStatesName(startState); //I don't think we have a function to do this?
+		
+		dfa.addStartState(startStateName);
+		
+		Queue<DFAState> queue = new LinkedList<DFAState>();
+		Set<String> statesFound = new LinkedHashSet<String>();
+		statesFound.add(startStateName);
+		queue.add(new DFAState(startStateName));
+	
+		// Add transitions 
+		addDFAStates(dfa, queue, statesFound); //Do we want to do another method or just do it all in here?
 		
 		return dfa;
 	}
