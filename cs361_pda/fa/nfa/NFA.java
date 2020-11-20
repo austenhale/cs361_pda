@@ -205,11 +205,11 @@ public class NFA implements NFAInterface{
 		queue.add(new DFAState(startStateName));
 	
 		// Add transitions 
-		addDFAStates(dfa, queue, statesFound); //Do we want to do another method or just do it all in here? --I think we can start it here, then move it later if we want
+		//addDFAStates(dfa, queue, statesFound); //Do we want to do another method or just do it all in here? --I think we can start it here, then move it later if we want
 		
 		while (!queue.isEmpty()) {
 			DFAState currState = queue.remove();
-			String[] NFAStates = getStatesFromName(currState);
+			String[] NFAStates = getStatesFromName(currState.getName());
 			
 			for (char c : language) { //for every character in the language
 				boolean finalState = false; //boolean tracker for when the final state is current
@@ -260,6 +260,12 @@ public class NFA implements NFAInterface{
 		return dfa;
 	}
 	
+	private String[] getStatesFromName(String stateName) {
+		String minusBrackets = stateName.substring(1, stateName.length() - 1); 
+		String[] splitString = minusBrackets.split(","); 
+		return splitString; 
+	}
+
 	private String getStatesNameString(LinkedHashSet<String> dFAState) {
 		String retVal = "{"; 
 		ArrayList<String> chars = new ArrayList<String>(); 
