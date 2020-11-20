@@ -1,6 +1,7 @@
 package fa.nfa;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -206,9 +207,85 @@ public class NFA implements NFAInterface{
 		// Add transitions 
 		addDFAStates(dfa, queue, statesFound); //Do we want to do another method or just do it all in here? --I think we can start it here, then move it later if we want
 		
+		while (!queue.isEmpty()) {
+			DFAState currState = queue.remove();
+			String[] NFAStates = getStatesFromName(currState);
+			
+			for (char c : language) { //for every character in the language
+				boolean finalState = false; //boolean tracker for when the final state is current
+				LinkedHashSet<String> DFAState = new LinkedHashSet<String>(); //set of all the DFA's states
+				
+				for (int i = 0; i < NFAStates.length; i++) { //iterate through all states of current state (in case of a state such as [a,b])
+					if (NFAStates[i].equals("")) continue;
+					
+					Set<NFAState> toStates = getToState(get(NFAStates[i]), c);
+					if (toStates == null) {
+						DFAState.add("{}");
+					} else {
+						for (NFAState state : toStates) {
+							if (state.isFinal())
+								finalState = true;
+							DFAState.add(state.getName());
+							Set<NFAState> eClosureStates = eClosure(state);
+							if (eClosureStates == null) {
+								DFAState.add("{}");
+							} else {
+								for (NFAState s : eClosureStates) {
+									DFAState.add(s.getName());
+									if (state.isFinal())
+										finalState = true;
+								}
+							}
+						}
+					} //end else statement for if toStates wasn't null
+				} //end for loop to go through all states
+				String stateName = getStatesNameString(DFAState);
+				if (!statesFound.contains(stateName)) {
+					statesFound.add(stateName);
+					if (finalState) {
+						dfa.addFinalState(stateName);
+					}
+					else {
+						dfa.addState(stateName);
+					}
+					queue.add(new DFAState(stateName)); //adding new state to queue
+				}
+				
+				dfa.addTransition(currState.getName(), c, stateName);
+			} //end for loop to go through all characters
+			
+			
+		}
+		
 		return dfa;
 	}
 	
+	private String getStatesNameString(LinkedHashSet<String> dFAState) {
+		String retVal = "{"; 
+		ArrayList<String> chars = new ArrayList<String>(); 
+		for (String s : dFAState) {
+			if (!s.equals("{}")) {
+				if(!chars.contains(s)) chars.add(s); 
+			}
+		}
+		Collections.sort(chars, String.CASE_INSENSITIVE_ORDER); 
+		for (String string : chars) {
+			retVal += string; 
+			retVal += ","; 
+		}
+		if (!retVal.equals("{")) {
+			retVal = retVal.substring(0, retVal.length()-1); 
+		}
+		retVal += "}"; 
+		return retVal; 
+	}
+
+	/**
+	 * Gets the names of a state, given a set of NFAStates. For example if the
+	 * NFA State is called [a,b], it will return a string containing {a, b}
+	 * @param state
+	 * @return
+	 */
 	private String getStatesName(Set<NFAState> state) {
 		String retVal = "{";
 		ArrayList<String> stateNames = new ArrayList<String>(); //list for storing all the names of the states
@@ -270,6 +347,19 @@ public class NFA implements NFAInterface{
 					return state;
 			}
 		
+		}
+		return null;
+	}
+	
+	/**
+	 * This will get an NFAState from a set, given a name. Returns null if not found.
+	 * @param name
+	 * @return a NFAState, or null
+	 */
+	private NFAState get(String name) {
+		for (NFAState s: states) {
+			if (s.getName().equals(name))
+				return s;
 		}
 		return null;
 	}
