@@ -13,6 +13,11 @@ import fa.State;
 import fa.dfa.DFA;
 import fa.dfa.DFAState;
 
+/**
+ * 
+ * @author Austen Hale, Sammie Fullmer
+ *
+ */
 public class NFA implements NFAInterface{
 	
 	private Set<NFAState> states;
