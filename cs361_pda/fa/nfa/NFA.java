@@ -159,36 +159,6 @@ public class NFA implements NFAInterface{
 		s += fStates;
 		return s;
 	}
-	
-	//each DFA state corresponds to set of NFA states
-			//getDfa method should track whether a DFA state with label(name) 
-				//corresponding to the string representation of the NFA states
-			//getDFA must use a breadth-first search
-				//loop iterating over a queue; an element of a queue is a set of NFA states
-				//example BFS:
-				//boolean visited[] = new boolean[V];
-				//LinkedList<integer> queue = new LinkedList<Integer>();
-				//visted[s] = true; //s is an int
-				//queue.add(s);
-				//while(queue.size() != 0){
-				//	s = queue.poll();
-				//	Iterator<Integer> i = adj[s].listIterator();
-				//	while (i.hasNext()){
-						//int n = i.next();
-						//if (!visited[n]){
-						//visited[n] = true;
-						//queue.add(n);}}
-			
-			//pseudocode for NFA to DFA
-			//Perform closure on current state set
-			//For each input symbol do the GOTO operation on closure set
-				//If the state set you get from GOTO is not empty
-					//Do a closure of the state set
-					//If it is a new set of states:
-						//add a transition between the state sets on the input
-						//repeat the entire operation on this new set
-					//else
-						//add a transition between the state sets on the input
 
 	public DFA getDFA() {
 		DFA dfa = new DFA();
@@ -204,9 +174,6 @@ public class NFA implements NFAInterface{
 		statesFound.add(startStateName);
 		queue.add(new DFAState(startStateName));
 	
-		// Add transitions 
-		//addDFAStates(dfa, queue, statesFound); //Do we want to do another method or just do it all in here? --I think we can start it here, then move it later if we want
-		
 		while (!queue.isEmpty()) {
 			DFAState currState = queue.remove();
 			String[] NFAStates = getStatesFromName(currState.getName());
@@ -260,12 +227,23 @@ public class NFA implements NFAInterface{
 		return dfa;
 	}
 	
+	/**
+	 * Takes in a DFA state name and returns an array of NFA state names
+	 * Example: {a, b} returns [a, b]
+	 * @param stateName
+	 * @return splitString array of NFA state names
+	 */
 	private String[] getStatesFromName(String stateName) {
-		String minusBrackets = stateName.substring(1, stateName.length() - 1); 
-		String[] splitString = minusBrackets.split(","); 
+		String noBrackets = stateName.substring(1, stateName.length() - 1); 
+		String[] splitString = noBrackets.split(","); 
 		return splitString; 
 	}
 
+	/**
+	 * Given a set of NFA state names, format into a DFA state such as {a, b}
+	 * @param dFAState set of strings
+	 * @return retVal string
+	 */
 	private String getStatesNameString(LinkedHashSet<String> dFAState) {
 		String retVal = "{"; 
 		ArrayList<String> chars = new ArrayList<String>(); 
@@ -289,8 +267,8 @@ public class NFA implements NFAInterface{
 	/**
 	 * Gets the names of a state, given a set of NFAStates. For example if the
 	 * NFA State is called [a,b], it will return a string containing {a, b}
-	 * @param state
-	 * @return
+	 * @param state set of states
+	 * @return 
 	 */
 	private String getStatesName(Set<NFAState> state) {
 		String retVal = "{";
@@ -322,6 +300,13 @@ public class NFA implements NFAInterface{
 	}
 
 	
+	/**
+	 * Recursive method to find eClosure
+	 * @param stack to use for DFS
+	 * @param e set of states currently in the eClosure
+	 * @param statesVisited to keep track of visited states
+	 * @return Set containing eClosure states
+	 */
 	private Set<NFAState> eClosure(Stack<NFAState> stack, Set<NFAState> e, Set<NFAState> statesVisited) {
 		if (stack.isEmpty()) {
 			return e;
