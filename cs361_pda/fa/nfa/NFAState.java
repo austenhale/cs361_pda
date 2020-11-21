@@ -40,9 +40,16 @@ public class NFAState extends fa.State{
 	}
 	
 	public void addTransition(char onSymb, NFAState to) {
-		LinkedHashSet<NFAState> setOfOne = new LinkedHashSet<NFAState>();
-		setOfOne.add(to);
-		delta.put(onSymb, setOfOne);
+		if (delta.get(onSymb) == null) {
+			LinkedHashSet<NFAState> setOfOne = new LinkedHashSet<NFAState>();
+			setOfOne.add(to);
+			delta.put(onSymb, setOfOne);
+		}else {
+			LinkedHashSet<NFAState> setOfMoreThanOne = delta.get(onSymb);
+			setOfMoreThanOne.add(to);
+			addTransition(onSymb, setOfMoreThanOne);
+		}
+		
 	}
 
 

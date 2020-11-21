@@ -18,12 +18,11 @@ public class NFA implements NFAInterface{
 	private Set<NFAState> states;
 	private NFAState start;
 	private Set<Character> language;
-	private Set<NFAState> visitedStates; 
+
 	
 	public NFA() {
 		states = new LinkedHashSet<NFAState>();
 		language = new LinkedHashSet<Character>();
-		visitedStates =  new LinkedHashSet<NFAState>();
 	}
 
 	@Override
@@ -301,7 +300,7 @@ public class NFA implements NFAInterface{
 				stateNames.add(s.getName());
 			}
 		}
-		//I don't think we need to sort through the list, [a,b] or [b,a] is fine
+		Collections.sort(stateNames, String.CASE_INSENSITIVE_ORDER);
 		for (String str : stateNames) {
 			retVal += str + ",";
 		}
@@ -390,6 +389,6 @@ public class NFA implements NFAInterface{
 
 	@Override
 	public Set<NFAState> getToState(NFAState from, char onSymb) {
-		return from.getTransition(onSymb);
+		return from.getTo(onSymb);
 	}
 }
