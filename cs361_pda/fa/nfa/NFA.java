@@ -167,13 +167,9 @@ public class NFA implements NFAInterface{
 
 	public DFA getDFA() {
 		DFA dfa = new DFA();
-		
-		Set<NFAState> startState = eClosure(this.start);
-		
-		String startStateName = getStatesName(startState); 
-		
+		Set<NFAState> startState = eClosure(start);
+		String startStateName = getNameFromState(startState); 
 		dfa.addStartState(startStateName);
-		
 		Queue<DFAState> queue = new LinkedList<DFAState>();
 		Set<String> statesFound = new LinkedHashSet<String>();
 		statesFound.add(startStateName);
@@ -181,28 +177,28 @@ public class NFA implements NFAInterface{
 	
 		while (!queue.isEmpty()) {
 			DFAState currState = queue.remove();
-			String[] NFAStates = getStatesFromName(currState.getName());
+			String[] NFAStates = convertNameToState(currState.getName());
 			
 			for (char c : language) { //for every character in the language
 				boolean finalState = false; //boolean tracker for when the final state is current
 				LinkedHashSet<String> DFAState = new LinkedHashSet<String>(); //set of all the DFA's states
 				
 				for (int i = 0; i < NFAStates.length; i++) { //iterate through all states of current state (in case of a state such as [a,b])
-					if (NFAStates[i].equals("")) continue;
+					if (NFAStates[i].equals("")) continue; //skip blank state
 					
 					Set<NFAState> toStates = getToState(get(NFAStates[i]), c);
 					if (toStates == null) {
-						DFAState.add("{}");
+						DFAState.add("[]");
 					} else {
 						for (NFAState state : toStates) {
 							if (state.isFinal())
 								finalState = true;
 							DFAState.add(state.getName());
-							Set<NFAState> eClosureStates = eClosure(state);
-							if (eClosureStates == null) {
-								DFAState.add("{}");
+							Set<NFAState> eClosureStates = eClosure(state); //getting all states that can be reached from current state
+							if (eClosureStates == null) { //if no states can't be reached, add empty state
+								DFAState.add("[]");
 							} else {
-								for (NFAState s : eClosureStates) {
+								for (NFAState s : eClosureStates) { //iterate through all reachable states
 									DFAState.add(s.getName());
 									if (state.isFinal())
 										finalState = true;
@@ -211,7 +207,7 @@ public class NFA implements NFAInterface{
 						}
 					} //end else statement for if toStates wasn't null
 				} //end for loop to go through all states
-				String stateName = getStatesNameString(DFAState);
+				String stateName = convertStateToName(DFAState);
 				if (!statesFound.contains(stateName)) {
 					statesFound.add(stateName);
 					if (finalState) {
@@ -238,70 +234,70 @@ public class NFA implements NFAInterface{
 	 * @param stateName
 	 * @return splitString array of NFA state names
 	 */
-	private String[] getStatesFromName(String stateName) {
+	private String[] convertNameToState(String stateName) {
 		String noBrackets = stateName.substring(1, stateName.length() - 1); 
 		String[] splitString = noBrackets.split(","); 
 		return splitString; 
 	}
 
 	/**
-	 * Given a set of NFA state names, format into a DFA state such as {a, b}
+	 * Given a set of NFA state names, format into a DFA state such as [a, b]
 	 * @param dFAState set of strings
 	 * @return retVal string
 	 */
-	private String getStatesNameString(LinkedHashSet<String> dFAState) {
-		String retVal = "{"; 
+	private String convertStateToName(LinkedHashSet<String> dFAState) {
+		String retVal = "["; 
 		ArrayList<String> chars = new ArrayList<String>(); 
 		for (String s : dFAState) {
-			if (!s.equals("{}")) {
+			if (!s.equals("[]")) {
 				if(!chars.contains(s)) chars.add(s); 
 			}
 		}
-		Collections.sort(chars, String.CASE_INSENSITIVE_ORDER); 
+		Collections.sort(chars, String.CASE_INSENSITIVE_ORDER); //puts state names in order
 		for (String string : chars) {
-			retVal += string; 
-			retVal += ","; 
+			retVal += string + ","; 
 		}
-		if (!retVal.equals("{")) {
+		if (!retVal.equals("[")) {
 			retVal = retVal.substring(0, retVal.length()-1); 
 		}
-		retVal += "}"; 
+		retVal += "]"; 
 		return retVal; 
 	}
 
 	/**
 	 * Gets the names of a state, given a set of NFAStates. For example if the
-	 * NFA State is called [a,b], it will return a string containing {a, b}
+	 * NFA State is called [a,b], it will return a string containing [a, b]
 	 * @param state set of states
 	 * @return 
 	 */
-	private String getStatesName(Set<NFAState> state) {
-		String retVal = "{";
+	private String getNameFromState(Set<NFAState> state) {
+		String retVal = "[";
 		ArrayList<String> stateNames = new ArrayList<String>(); //list for storing all the names of the states
 		for (NFAState s: state) { //iterate through passed in states in the set
 			if (!stateNames.contains(s.getName())) {
 				stateNames.add(s.getName());
 			}
 		}
-		Collections.sort(stateNames, String.CASE_INSENSITIVE_ORDER);
+		Collections.sort(stateNames, String.CASE_INSENSITIVE_ORDER); //put state names in order
 		for (String str : stateNames) {
 			retVal += str + ",";
 		}
 		
 		retVal = retVal.substring(0, retVal.length()-1);
-		retVal += "}";
+		retVal += "]";
 		return retVal;
 	}
 
 	public Set<NFAState> eClosure(NFAState s){
-		Set<NFAState> e = new LinkedHashSet<NFAState>();
-		e.add(s);
+		Set<NFAState> eSet = new LinkedHashSet<NFAState>();
+		eSet.add(s);
 		Stack<NFAState> stack = new Stack<NFAState>();
 		stack.add(s);
 		
 		Set<NFAState> statesVisited = new LinkedHashSet<NFAState>();
 		
-		return eClosure(stack, e, statesVisited);
+		
+		return eClosure(stack, eSet, statesVisited);
 	}
 
 	
@@ -312,23 +308,23 @@ public class NFA implements NFAInterface{
 	 * @param statesVisited to keep track of visited states
 	 * @return Set containing eClosure states
 	 */
-	private Set<NFAState> eClosure(Stack<NFAState> stack, Set<NFAState> e, Set<NFAState> statesVisited) {
+	private Set<NFAState> eClosure(Stack<NFAState> stack, Set<NFAState> eSet, Set<NFAState> statesVisited) {
 		if (stack.isEmpty()) {
-			return e;
+			return eSet;
 		}
 		NFAState next = stack.pop();
 		if (statesVisited.contains(next)) {
-			return e;
+			return eSet;
 		}
 		LinkedHashSet<NFAState> nextETransitions = next.getTo('e');
 		if (nextETransitions != null) {
 			for (NFAState n : nextETransitions) {
-				e.add(n);
+				eSet.add(n);
 				stack.add(n);
 			}
 		}
 		statesVisited.add(next);
-		return eClosure(stack, e, statesVisited);
+		return eClosure(stack, eSet, statesVisited);
 	}
 
 	/**
